@@ -3,12 +3,14 @@ import "./ProductList.css";
 import CartItem from "./CartItem";
 import { addItem } from "./CartSlice";
 import { useDispatch, useSelector } from "react-redux";
+
 function ProductList({ onHomeClick }) {
   const [showCart, setShowCart] = useState(false);
-  const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+  const [showPlants, setShowPlants] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
 
   const dispatch = useDispatch();
+  const CartItems = useSelector((state) => state.cart.items);
 
   const plantsArray = [
     {
@@ -274,6 +276,7 @@ function ProductList({ onHomeClick }) {
   };
 
   const handleAddToCart = (product) => {
+    console.log(product);
     dispatch(addItem(product));
     setAddedToCart((prevState) => ({
       ...prevState,
@@ -300,6 +303,15 @@ function ProductList({ onHomeClick }) {
     e.preventDefault();
     setShowCart(false);
   };
+  const calculateTotalQuantity = () => {
+    let numInCart =
+      CartItems.length == 0
+        ? 0
+        : CartItems.reduce((total, item) => total + item.quantity, 0);
+
+    return numInCart;
+  };
+
   return (
     <div>
       <div className="navbar" style={styleObj}>
@@ -319,13 +331,11 @@ function ProductList({ onHomeClick }) {
         </div>
         <div style={styleObjUl}>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
           </div>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
               <h1 className="cart">
                 <svg
@@ -348,6 +358,9 @@ function ProductList({ onHomeClick }) {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
+                <span className="cart_quantity_count">
+                  {calculateTotalQuantity()}
+                </span>
               </h1>
             </a>
           </div>
@@ -358,7 +371,7 @@ function ProductList({ onHomeClick }) {
           {plantsArray.map((category, index) => (
             <div key={index}>
               <h1>
-                <div>{category.category}</div>{" "}
+                <div>{category.category}</div>
               </h1>
               <div className="product-list">
                 {category.plants.map((plant, plantIndex) => (
@@ -368,14 +381,15 @@ function ProductList({ onHomeClick }) {
                       src={plant.image}
                       alt={plant.name}
                     />
-                    <div className="product-title">{plant.name}</div>{" "}
+                    <div className="product-title">{plant.name}</div>
                     <div className="product-description">
                       {plant.description}
-                    </div>{" "}
-                    <div className="product-cost">${plant.cost}</div>{" "}
+                    </div>
+                    <div className="product-cost">{plant.cost}</div>
                     <button
                       className="product-button"
-                      onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
+                      onClick={() => handleAddToCart(plant)}
+                      // disabled=// Handle adding plant to cart
                     >
                       Add to Cart
                     </button>
